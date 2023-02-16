@@ -1,11 +1,11 @@
-ARG ANDROID_VERSION="33"
+ARG ANDROID_API_LEVEL="31"
 ARG ANDROID_ARCHITECTURE="x86"
 
 #======================
 # Set up Android SDK
 #======================
 FROM ubuntu:22.04 AS android-sdk
-ARG ANDROID_VERSION
+ARG ANDROID_API_LEVEL
 ARG ANDROID_ARCHITECTURE
 ENV ANDROID_BUILDTOOLS_VERSION="30.0.3"
 ENV ANDROID_COMMANDLINETOOLS_DOWNLOAD="https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip"
@@ -29,10 +29,10 @@ RUN wget -O sdk-tools.zip $ANDROID_COMMANDLINETOOLS_DOWNLOAD
 RUN unzip sdk-tools.zip -d /home/developer/Android/cmdline-tools && rm sdk-tools.zip
 RUN mv /home/developer/Android/cmdline-tools/cmdline-tools /home/developer/Android/cmdline-tools/latest
 RUN yes | /home/developer/Android/cmdline-tools/latest/bin/sdkmanager --install \
-    "platform-tools" "platforms;android-$ANDROID_VERSION" \
+    "platform-tools" "platforms;android-$ANDROID_API_LEVEL" \
     "build-tools;$ANDROID_BUILDTOOLS_VERSION" \
     "emulator" \
-    "system-images;android-$ANDROID_VERSION;google_apis;$ANDROID_ARCHITECTURE"
+    "system-images;android-$ANDROID_API_LEVEL;google_apis;$ANDROID_ARCHITECTURE"
 
 #======================
 # Set up Flutter SDK
@@ -111,9 +111,9 @@ WORKDIR /home/developer
 COPY --from=android-sdk /home/developer/Android ./Android
 ENV ANDROID_HOME /home/developer/Android   
 ENV PATH "$PATH:/home/developer/Android/cmdline-tools/latest/bin"
-ARG ANDROID_VERSION
+ARG ANDROID_API_LEVEL
 ARG ANDROID_ARCHITECTURE
-RUN echo no | avdmanager create avd -n samsung_emulator -k "system-images;android-$ANDROID_VERSION;google_apis;$ANDROID_ARCHITECTURE"
+RUN echo no | avdmanager create avd -n samsung_emulator -k "system-images;android-$ANDROID_API_LEVEL;google_apis;$ANDROID_ARCHITECTURE"
 
 # Flutter
 COPY --from=flutter-sdk /home/developer/flutter ./flutter 
