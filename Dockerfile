@@ -1,14 +1,14 @@
-ARG ANDROID_API_LEVEL="30"
-ARG ANDROID_ARCHITECTURE="x86"
+ARG ANDROID_API_LEVEL="30" \
+    ANDROID_ARCHITECTURE="x86" 
 
 #======================
 # Set up Android SDK
 #======================
 FROM ubuntu:22.04 AS android-sdk
-ARG ANDROID_API_LEVEL
-ARG ANDROID_ARCHITECTURE
-ENV ANDROID_BUILDTOOLS_VERSION="30.0.3"
-ENV ANDROID_COMMANDLINETOOLS_DOWNLOAD="https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip"
+ARG ANDROID_API_LEVEL \ 
+    ANDROID_ARCHITECTURE
+ENV ANDROID_BUILDTOOLS_VERSION="30.0.3" \
+    ANDROID_COMMANDLINETOOLS_DOWNLOAD="https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip"
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     wget \
@@ -56,8 +56,8 @@ RUN flutter update-packages
 # Set up noVNC
 #======================
 FROM ubuntu:22.04 AS novnc
-ENV NOVNC_DOWNLOAD="https://github.com/novnc/noVNC/archive/refs/tags/v1.4.0-beta.tar.gz"
-ENV WEBSOCKIFY_DOWNLOAD="https://github.com/novnc/websockify/archive/refs/tags/v0.11.0.tar.gz"
+ENV NOVNC_DOWNLOAD="https://github.com/novnc/noVNC/archive/refs/tags/v1.4.0-beta.tar.gz" \
+    WEBSOCKIFY_DOWNLOAD="https://github.com/novnc/websockify/archive/refs/tags/v0.11.0.tar.gz"
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     wget \
@@ -77,7 +77,13 @@ RUN wget -qO- $WEBSOCKIFY_DOWNLOAD | tar xvz -C websockify --strip-components 1
 # Create final build
 #======================
 FROM ubuntu:22.04 
-ENV DEBIAN_FRONTEND noninteractive
+ENV DEBIAN_FRONTEND=noninteractive \
+    DISPLAY=:0 \
+    SCREEN=0 \
+    VNC_PORT=5901 \
+    VNC_GEOMETRY=500x700 \
+    ANDROID_DEVICENAME="android_emulator"
+
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     curl \
@@ -111,9 +117,11 @@ WORKDIR /home/developer
 COPY --from=android-sdk /home/developer/Android ./Android
 ENV ANDROID_HOME /home/developer/Android   
 ENV PATH "$PATH:/home/developer/Android/cmdline-tools/latest/bin"
-ARG ANDROID_API_LEVEL
-ARG ANDROID_ARCHITECTURE
-RUN echo no | avdmanager create avd -n samsung_emulator -k "system-images;android-$ANDROID_API_LEVEL;google_apis;$ANDROID_ARCHITECTURE"
+ARG ANDROID_API_LEVEL \
+    ANDROID_ARCHITECTURE
+RUN echo no | avdmanager create avd \
+    -n $ANDROID_DEVICENAME \
+    -k "system-images;android-$ANDROID_API_LEVEL;google_apis;$ANDROID_ARCHITECTURE"
 
 # Flutter
 COPY --from=flutter-sdk /home/developer/flutter ./flutter 
@@ -123,13 +131,11 @@ RUN yes | flutter doctor --android-licenses
 
 # noVNC
 COPY --from=novnc /home/developer/noVNC ./noVNC 
-ENV DISPLAY=:0 \
-    SCREEN=0 \
-    SCREEN_WIDTH=1600 \
-    SCREEN_HEIGHT=900 \
-    SCREEN_DEPTH=16 \
-    VNC_PORT=5901 \
-    NOVNC_PORT=6080 \
-    TIMEOUT=1
+ENV NOVNC_PORT=6080
+EXPOSE $NOVNC_PORT
+
+# services
+COPY ./start_emulator.sh ./start_emulator.sh
+RUN chmod +x ./start_emulator.sh
 
 CMD [ "flutter", "doctor" ] 
