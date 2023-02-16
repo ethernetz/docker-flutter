@@ -1,9 +1,12 @@
+ARG ANDROID_VERSION="21"
+ARG ANDROID_ARCHITECTURE="x86"
+
 #======================
 # Set up Android SDK
 #======================
 FROM ubuntu:22.04 AS android-sdk
-ENV ANDROID_VERSION="33"
-ENV ANDROID_ARCHITECTURE="x86_64"
+ARG ANDROID_VERSION
+ARG ANDROID_ARCHITECTURE
 ENV ANDROID_BUILDTOOLS_VERSION="30.0.3"
 ENV ANDROID_COMMANDLINETOOLS_DOWNLOAD="https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip"
 RUN apt-get update && \
@@ -29,7 +32,7 @@ RUN yes | /home/developer/Android/cmdline-tools/latest/bin/sdkmanager --install 
     "platform-tools" "platforms;android-$ANDROID_VERSION" \
     "build-tools;$ANDROID_BUILDTOOLS_VERSION" \
     "emulator" \
-    "system-images;android-$ANDROID_VERSION;google_apis_playstore;$ANDROID_ARCHITECTURE"
+    "system-images;android-$ANDROID_VERSION;google_apis;$ANDROID_ARCHITECTURE"
 
 #======================
 # Set up Flutter SDK
@@ -96,7 +99,8 @@ RUN apt-get update && \
     libvirt-clients \
     bridge-utils \
     menu \
-    openbox
+    openbox \
+    python3-numpy
 
 # Set up user
 RUN useradd -ms /bin/bash developer
@@ -107,13 +111,15 @@ WORKDIR /home/developer
 COPY --from=android-sdk /home/developer/Android ./Android
 ENV ANDROID_HOME /home/developer/Android   
 ENV PATH "$PATH:/home/developer/Android/cmdline-tools/latest/bin"
+ARG ANDROID_VERSION
+ARG ANDROID_ARCHITECTURE
+RUN echo no | avdmanager create avd -n samsung_emulator -k "system-images;android-$ANDROID_VERSION;google_apis;$ANDROID_ARCHITECTURE"
 
 # Flutter
 COPY --from=flutter-sdk /home/developer/flutter ./flutter 
 ENV PATH "$PATH:/home/developer/flutter/bin"  
 RUN git config --global --add safe.directory /home/developer/flutter
 RUN yes | flutter doctor --android-licenses
-RUN flutter emulators --create
 
 # noVNC
 COPY --from=novnc /home/developer/noVNC ./noVNC 
