@@ -38,7 +38,7 @@ RUN yes | /home/developer/Android/cmdline-tools/latest/bin/sdkmanager --install 
 # Set up Flutter SDK
 #======================
 FROM ubuntu:22.04 AS flutter-sdk
-ENV FLUTTER_DOWNLOAD="https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.7.3-stable.tar.xz"
+ENV FLUTTER_DOWNLOAD="https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.7.1-stable.tar.xz"
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     wget \
