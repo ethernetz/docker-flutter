@@ -106,7 +106,9 @@ RUN apt-get update && \
     bridge-utils \
     menu \
     openbox \
-    python3-numpy
+    python3-numpy \
+    pip \
+    virt-viewer
 
 # Set up user
 RUN useradd -ms /bin/bash developer
@@ -128,11 +130,15 @@ COPY --from=flutter-sdk /home/developer/flutter ./flutter
 ENV PATH "$PATH:/home/developer/flutter/bin"  
 RUN git config --global --add safe.directory /home/developer/flutter
 RUN yes | flutter doctor --android-licenses
+RUN flutter pub get
 
 # noVNC
 COPY --from=novnc /home/developer/noVNC ./noVNC 
 ENV NOVNC_PORT=6080
 EXPOSE $NOVNC_PORT
+
+# Appollo
+RUN pip install appollo
 
 # services
 COPY ./start_emulator.sh ./start_emulator.sh
