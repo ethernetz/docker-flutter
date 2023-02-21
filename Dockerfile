@@ -130,7 +130,6 @@ COPY --from=flutter-sdk /home/developer/flutter ./flutter
 ENV PATH "$PATH:/home/developer/flutter/bin"  
 RUN git config --global --add safe.directory /home/developer/flutter
 RUN yes | flutter doctor --android-licenses
-RUN flutter pub get
 
 # noVNC
 COPY --from=novnc /home/developer/noVNC ./noVNC 
