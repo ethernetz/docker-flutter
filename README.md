@@ -7,6 +7,10 @@ inside the container you'll find
 - android SDK and a device all ready to go 
 - noVNC to see play with the emulator in the broswer
 
+**all this is happening inside a devcontainer 🤯**
+
+<img width="945" alt="image" src="https://user-images.githubusercontent.com/10564713/223031704-57bf1bce-c524-4292-b6f1-875d7ff0b06e.png">
+
 
 ## why would i use this? 
 you get a consistent dev environement in 1 command, no matter the host machine 😍
@@ -75,6 +79,7 @@ once your dev environment is set up, it just takes 4 commands to see your flutte
 #### once the emulator is ready, start the flutter app! 
 
 `flutter run -d emulator-5554`
+
 <img width="945" alt="image" src="https://user-images.githubusercontent.com/10564713/223031704-57bf1bce-c524-4292-b6f1-875d7ff0b06e.png">
 
 
