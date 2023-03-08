@@ -1,4 +1,4 @@
-ARG ANDROID_API_LEVEL="30" \
+ARG ANDROID_API_LEVEL="25" \
     ANDROID_ARCHITECTURE="x86" 
 
 #======================
