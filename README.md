@@ -60,17 +60,9 @@ flutter-docker even works inside a dev container
 
 ## running the emulator
 
-once your dev environment is set up, it just takes 4 commands to see your flutter app in an android emulator
-
-#### start the VNC to the emulator has a display to write to
-`Xtigervnc ${DISPLAY} -rfbport ${VNC_PORT} -localhost -SecurityTypes=none`
-
-#### expose the display to the broswer with noVNC 
-
-`/home/developer/noVNC/utils/novnc_proxy --vnc localhost:${VNC_PORT} --listen ${NOVNC_PORT}`
+once your dev environment is set up, it just takes 2 commands to see your flutter app in an android emulator
 
 #### start the emulator
-
 `/home/developer/start_emulator.sh`
 
 <img width="938" alt="image" src="https://user-images.githubusercontent.com/10564713/223029782-e929a0f0-668a-4ba2-a4e1-6ee53a564bfe.png">
