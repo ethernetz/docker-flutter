@@ -1,4 +1,4 @@
-ARG ANDROID_API_LEVEL="25" \
+ARG ANDROID_API_LEVEL="24" \
     ANDROID_ARCHITECTURE="x86" 
 
 #======================
@@ -124,7 +124,7 @@ ARG ANDROID_API_LEVEL \
 RUN echo no | avdmanager create avd \
     -n $ANDROID_DEVICENAME \
     -k "system-images;android-$ANDROID_API_LEVEL;google_apis;$ANDROID_ARCHITECTURE" \
-    -d "Nexus 5"
+    -d "Nexus 5X"
 
 # Flutter
 COPY --from=flutter-sdk /home/developer/flutter ./flutter 
