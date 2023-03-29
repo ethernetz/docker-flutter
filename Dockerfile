@@ -125,6 +125,7 @@ RUN echo no | avdmanager create avd \
     -n $ANDROID_DEVICENAME \
     -k "system-images;android-$ANDROID_API_LEVEL;google_apis;$ANDROID_ARCHITECTURE" \
     -d "Nexus 5X"
+RUN echo "hw.keyboard=yes" >> /home/developer/.android/avd/$ANDROID_DEVICENAME.avd/config.ini
 
 # Flutter
 COPY --from=flutter-sdk /home/developer/flutter ./flutter 
