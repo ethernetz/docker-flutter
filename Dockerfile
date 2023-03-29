@@ -142,7 +142,7 @@ EXPOSE $NOVNC_PORT
 RUN pip install appollo
 
 # services
-COPY ./start_emulator.sh ./start_emulator.sh
-RUN chmod +x ./start_emulator.sh
+COPY ./start.sh /start.sh
+RUN chmod +x /start.sh
 
 CMD [ "flutter", "doctor" ] 
