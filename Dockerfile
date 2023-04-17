@@ -118,7 +118,7 @@ WORKDIR /home/developer
 # Android
 COPY --from=android-sdk /home/developer/Android ./Android
 ENV ANDROID_HOME /home/developer/Android   
-ENV PATH "$PATH:/home/developer/Android/cmdline-tools/latest/bin"
+ENV PATH "$PATH:/home/developer/Android/cmdline-tools/latest/bin:/home/developer/Android/platform-tools"
 ARG ANDROID_API_LEVEL \
     ANDROID_ARCHITECTURE
 RUN echo no | avdmanager create avd \
@@ -132,6 +132,12 @@ COPY --from=flutter-sdk /home/developer/flutter ./flutter
 ENV PATH "$PATH:/home/developer/flutter/bin"  
 RUN git config --global --add safe.directory /home/developer/flutter
 RUN yes | flutter doctor --android-licenses
+
+# Cache Gradle dependencies
+RUN flutter create dummy_project
+WORKDIR /home/developer/dummy_project/android
+RUN ./gradlew assembleDebug
+RUN rm -rf /home/developer/dummy_project
 
 # noVNC
 COPY --from=novnc /home/developer/noVNC ./noVNC 
