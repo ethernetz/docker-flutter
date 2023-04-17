@@ -57,16 +57,11 @@ RUN useradd -ms /bin/bash developer
 USER developer
 WORKDIR /home/developer
 
-# Install Flutter SDK and cache Gradle dependencies
+# Install Flutter SDK
 RUN wget -qO- $FLUTTER_DOWNLOAD | tar -xvJ && \
     echo 'export PATH="$PATH:/home/developer/flutter/bin"' >> /home/developer/.bashrc && \
     export PATH="$PATH:/home/developer/flutter/bin" && \
-    flutter update-packages && \
-    flutter create dummy_project && \
-    cd dummy_project/android && \
-    ./gradlew assembleDebug && \
-    cd /home/developer && \
-    rm -rf dummy_project
+    flutter update-packages
 
 # Install noVNC
 RUN mkdir noVNC && \
@@ -132,6 +127,13 @@ COPY --from=flutter-sdk /home/developer/flutter ./flutter
 ENV PATH "$PATH:/home/developer/flutter/bin"
 RUN git config --global --add safe.directory /home/developer/flutter && \
     yes | flutter doctor --android-licenses
+
+# Cache Gradle dependencies
+RUN flutter create dummy_project && \
+    cd dummy_project/android && \
+    ./gradlew assembleDebug && \
+    cd /home/developer && \
+    rm -rf dummy_project
 
 # noVNC
 COPY --from=flutter-sdk /home/developer/noVNC ./noVNC
