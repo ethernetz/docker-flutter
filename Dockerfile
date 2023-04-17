@@ -57,24 +57,22 @@ RUN useradd -ms /bin/bash developer
 USER developer
 WORKDIR /home/developer
 
-# Install Flutter SDK
+# Install Flutter SDK and cache Gradle dependencies
 RUN wget -qO- $FLUTTER_DOWNLOAD | tar -xvJ && \
     echo 'export PATH="$PATH:/home/developer/flutter/bin"' >> /home/developer/.bashrc && \
     export PATH="$PATH:/home/developer/flutter/bin" && \
-    flutter update-packages
+    flutter update-packages && \
+    flutter create dummy_project && \
+    cd dummy_project/android && \
+    ./gradlew assembleDebug && \
+    cd /home/developer && \
+    rm -rf dummy_project
 
 # Install noVNC
 RUN mkdir noVNC && \
     wget -qO- $NOVNC_DOWNLOAD | tar xvz -C noVNC --strip-components 1 && \
     mkdir noVNC/utils/websockify && \
     wget -qO- $WEBSOCKIFY_DOWNLOAD | tar xvz -C noVNC/utils/websockify --strip-components 1
-
-# Cache Gradle dependencies
-RUN flutter create dummy_project && \
-    cd dummy_project/android && \
-    ./gradlew assembleDebug && \
-    cd /home/developer && \
-    rm -rf dummy_project
 
 #======================
 # Create final build
