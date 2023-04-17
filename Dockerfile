@@ -122,14 +122,12 @@ RUN echo no | avdmanager create avd \
     -d "Nexus 5X"
 RUN echo "hw.keyboard=yes" >> /root/.android/avd/$ANDROID_DEVICENAME.avd/config.ini
 
-# Flutter
+# Flutter and cache Gradle dependencies
 COPY --from=flutter-sdk /home/developer/flutter ./flutter
 ENV PATH "$PATH:/home/developer/flutter/bin"
 RUN git config --global --add safe.directory /home/developer/flutter && \
-    yes | flutter doctor --android-licenses
-
-# Cache Gradle dependencies
-RUN flutter create dummy_project && \
+    yes | flutter doctor --android-licenses && \
+    flutter create dummy_project && \
     cd dummy_project/android && \
     ./gradlew assembleDebug && \
     cd /home/developer && \
